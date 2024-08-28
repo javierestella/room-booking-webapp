@@ -23,23 +23,25 @@ def generate_calendar(year, month, reservas):
     fig = go.Figure(
         data=go.Table(
             header=dict(
-                values=['LUN','MAR','MIE','JUE','VIE','SAB','DOM'],
-                align='center'
+                values= ['LUN','MAR','MIE','JUE','VIE','SAB','DOM'],
+                align=  'center',
+                font=   {'size':15}
                 ),
             cells=dict(
-                values=pd.DataFrame([[d[0] if d[0]!=0 else '' for d in w] for w in month_days]).T,
-                fill_color=pd.DataFrame([[d[1] for d in w] for w in month_days]).T,
-                align='center',
-                height=40
+                values=     pd.DataFrame([[d[0] if d[0]!=0 else '' for d in w] for w in month_days]).T,
+                fill_color= pd.DataFrame([[d[1] for d in w] for w in month_days]).T,
+                align=      'center',
+                height=     40,
+                font=       {'size':15}
                 )
             )
         )
     fig.update_layout(
     title={
-        'text': datetime(year,month,1).strftime("%B, %Y"),
-        'x': 0.5,  # Alineación horizontal (0.5 para centrado)
-        'xanchor': 'center',  # Anclaje horizontal del título
-        'yanchor': 'top'  # Anclaje vertical del título
+        'text':     datetime(year,month,1).strftime("%B, %Y"),
+        'x':        0.5,
+        'xanchor':  'center',
+        'yanchor':  'top'
     },
     xaxis_title="Eje X",
     yaxis_title="Eje Y"
@@ -60,3 +62,33 @@ def save_new_reg(new_record):
             writer.writeheader()
 
         writer.writerow(new_record)
+
+
+def save_new_band(new_band):
+    file_path = 'data/bands.csv'
+
+    file_exists = os.path.isfile(file_path)
+    fieldnames = ['date','email', 'name']
+
+    with open(file_path, 'a', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        if not file_exists:
+            writer.writeheader()
+
+        writer.writerow(new_band)
+
+
+def save_new_user(new_user):
+    file_path = 'data/users.csv'
+
+    file_exists = os.path.isfile(file_path)
+    fieldnames = ['date','email', 'name', 'surnames', 'birthdate', 'address', 'city', 'gender']
+
+    with open(file_path, 'a', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        if not file_exists:
+            writer.writeheader()
+
+        writer.writerow(new_user)
