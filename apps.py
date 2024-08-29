@@ -54,8 +54,8 @@ def main_app():
 
 
 nueva_reserva = {
-    'email':        'estellalosa@gmail.com',
-    'band':         'Wolves and Weapons',
+    'email':        'membername@gmail.com',
+    'band':         'band_name',
     'start_date':   '2024-08-14',
     'end_date':     '2024-08-14',
     'start_time':   '15:00:00',
@@ -66,21 +66,21 @@ nueva_reserva = {
 
 nueva_banda = {
     'date':     datetime.now(),
-    'email':    'wolvesandweapons@gmail.com',
-    'name':     'Wolves and Weapons'
+    'email':    'bandemail@gmail.com',
+    'name':     'band_name'
     }
 
 nuevo_usuario = {
     'date':     datetime.now(),
-    'email':    'estellalosa@gmail.com',
-    'name':     'Javier', 
-    'surnames': 'Estella Losa',
-    'birthdate':'27/04/1992', 
-    'address':  'C/Vicente Aranda, 2',
-    'city':     'Rivas-Vaciamadrid'
+    'email':    'membername@gmail.com',
+    'name':     'somename', 
+    'surnames': 'somesurnames',
+    'birthdate':'01/01/1992', 
+    'address':  'C/street, 2',
+    'city':     'somecity'
 }
 
 
-# save_new_reg(nueva_reserva)
-# save_new_band(nueva_banda)
-# save_new_user(nuevo_usuario)
+save_new_reg(nueva_reserva)
+save_new_band(nueva_banda)
+save_new_user(nuevo_usuario)
