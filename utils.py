@@ -1,51 +1,56 @@
 import streamlit as st
 import plotly.express as px
-import calendar
+# import calendar
+from calendar import monthrange
 import pandas as pd
 from datetime import datetime, timedelta
 import plotly.graph_objects as go
 import csv
 import os
+import numpy as np
 
-def generate_calendar(year, month, reservas):
+def create_calendar(year, month, sala):
 
-    cal = calendar.Calendar(0)
-    month_days = cal.monthdayscalendar(year, month)
+    indexes = []
+    for i in range(48):
+        index = f'{(datetime(year, month,1,0,0,0) + timedelta(minutes=i*30)).time().strftime("%H:%M")}'
+        index += f' - {(datetime(year, month,1,0,0,0) + timedelta(minutes=(i+1)*30)).time().strftime("%H:%M")}'
+        indexes.append(index)
 
-    for i_week in range(len(month_days)):
-        week = month_days[i_week]
+    n_days = monthrange(year, month)[1]
+    calendar = pd.DataFrame(np.zeros((48, n_days)))
+    calendar.index = indexes
+    calendar.columns = range(1, n_days+1)
 
-        for i_day in range(len(week)):
-            day = week[i_day]
-            date = f'{year}-{month:02d}-{day:02d}'
-            month_days[i_week][i_day] = (day, 'black' if date not in reservas else '#ff4b4b')
+    reservas = st.session_state['reservas'].copy()
+    reservas['start_date'] = pd.to_datetime(reservas['start_date'], format='%Y-%m-%d')
+    reservas = reservas[reservas['start_date'] > datetime(st.session_state['now'].year, st.session_state['now'].month, 1)]
+    reservas = reservas[reservas['start_date'] <= datetime(st.session_state['now'].year, st.session_state['now'].month, n_days)]
 
-    fig = go.Figure(
-        data=go.Table(
-            header=dict(
-                values= ['LUN','MAR','MIE','JUE','VIE','SAB','DOM'],
-                align=  'center',
-                font=   {'size':15}
-                ),
-            cells=dict(
-                values=     pd.DataFrame([[d[0] if d[0]!=0 else '' for d in w] for w in month_days]).T,
-                fill_color= pd.DataFrame([[d[1] for d in w] for w in month_days]).T,
-                align=      'center',
-                height=     40,
-                font=       {'size':15}
-                )
-            )
+    myscale = [[0, 'rgba(0,0,0,0)'],[1, 'rgba(255, 75, 75, 1)']]
+
+    fig = px.imshow(
+        calendar,
+        color_continuous_midpoint=.5,
+        color_continuous_scale=myscale
         )
     fig.update_layout(
-    title={
-        'text':     datetime(year,month,1).strftime("%B, %Y"),
-        'x':        0.5,
-        'xanchor':  'center',
-        'yanchor':  'top'
-    },
-    xaxis_title="Eje X",
-    yaxis_title="Eje Y"
-    )
+        coloraxis_showscale=False,
+        title={
+            'text':     datetime(year, month, 1).strftime("%B, %Y"),
+            'x':        0.5,
+            'xanchor':  'center',
+            'yanchor':  'top'
+            },
+        xaxis_title = 'Día',
+        yaxis_title = 'Franja',
+        width=1700,
+        height=700)
+    fig.update_yaxes(showgrid=False)
+    fig.update_xaxes(tickmode='linear', showgrid=False)
+
+    grupos = st.session_state['bands']
+
     return fig
 
 
@@ -53,7 +58,7 @@ def save_new_reg(new_record):
     file_path = 'data/events.csv'
 
     file_exists = os.path.isfile(file_path)
-    fieldnames = ['email', 'band', 'start_date', 'end_date','start_time','end_time','confirmed','sanctioned']
+    fieldnames = ['email', 'band', 'start_date', 'end_date','start_time','end_time','confirmed','sanctioned','sala']
 
     with open(file_path, 'a', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -92,3 +97,18 @@ def save_new_user(new_user):
             writer.writeheader()
 
         writer.writerow(new_user)
+
+
+def save_new_link(new_link):
+    file_path = 'data/links.csv'
+
+    file_exists = os.path.isfile(file_path)
+    fieldnames = ['date','user_email', 'band_email']
+
+    with open(file_path, 'a', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        if not file_exists:
+            writer.writeheader()
+
+        writer.writerow(new_link)
