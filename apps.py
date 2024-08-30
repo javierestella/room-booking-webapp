@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from utils import save_new_reg, save_new_band, save_new_user, save_new_link, create_calendar
+import utils as u 
 from datetime import datetime, timedelta
 from calendar import monthrange
 import numpy as np
@@ -17,44 +17,48 @@ def main_app():
         )
     if pagina == 'Visor':
         st.title('Calendario')
+        calendar = u.Calendar(2024, 8, 1)
 
-        with st.expander('Sala 1'):
-            left,right = st.columns(2)
-            if left.button('Mes anterior en Sala 1', use_container_width=True):
-                last_days = st.session_state['now'].day + 1
-                st.session_state['now'] = st.session_state['now'] - timedelta(last_days)
-                st.session_state['calendar'] = create_calendar(st.session_state['now'].year, 
-                                                               st.session_state['now'].month, 
-                                                               1)
+        # calendar.add_booking(nueva_reserva)
+        calendar.show()
 
-            if right.button('Mes siguiente en Sala 1', use_container_width=True):
-                n_days = monthrange(st.session_state['now'].year, st.session_state['now'].month)[1]
-                last_days = n_days - st.session_state['now'].day + 1
-                st.session_state['now'] = st.session_state['now'] + timedelta(last_days)
-                st.session_state['calendar'] = create_calendar(st.session_state['now'].year, 
-                                                               st.session_state['now'].month, 
-                                                               1)
+        # with st.expander('Sala 1'):
+        #     left,right = st.columns(2)
+        #     if left.button('Mes anterior en Sala 1', use_container_width=True):
+        #         last_days = st.session_state['now'].day + 1
+        #         st.session_state['now'] = st.session_state['now'] - timedelta(last_days)
+        #         st.session_state['calendar'] = create_calendar(st.session_state['now'].year, 
+        #                                                        st.session_state['now'].month, 
+        #                                                        1)
 
-            st.plotly_chart(st.session_state['calendar'])
+        #     if right.button('Mes siguiente en Sala 1', use_container_width=True):
+        #         n_days = monthrange(st.session_state['now'].year, st.session_state['now'].month)[1]
+        #         last_days = n_days - st.session_state['now'].day + 1
+        #         st.session_state['now'] = st.session_state['now'] + timedelta(last_days)
+        #         st.session_state['calendar'] = create_calendar(st.session_state['now'].year, 
+        #                                                        st.session_state['now'].month, 
+        #                                                        1)
 
-        with st.expander('Sala 2'):
-            left,right = st.columns(2)
-            if left.button('Mes anterior en Sala 2', use_container_width=True):
-                last_days = st.session_state['now'].day + 1
-                st.session_state['now'] = st.session_state['now'] - timedelta(last_days)
-                reservas = st.session_state['reservas']
-                reservas = reservas[reservas['sala'] == 2]
-                st.session_state['calendar'] = create_calendar(st.session_state['now'].year, st.session_state['now'].month, 2)
+        #     st.plotly_chart(st.session_state['calendar'])
 
-            if right.button('Mes siguiente en Sala 2', use_container_width=True):
-                n_days = monthrange(st.session_state['now'].year, st.session_state['now'].month)[1]
-                last_days = n_days - st.session_state['now'].day + 1
-                st.session_state['now'] = st.session_state['now'] + timedelta(last_days)
-                reservas = st.session_state['reservas']
-                reservas = reservas[reservas['sala'] == 2]
-                st.session_state['calendar'] = create_calendar(st.session_state['now'].year, st.session_state['now'].month, 2)
+        # with st.expander('Sala 2'):
+        #     left,right = st.columns(2)
+        #     if left.button('Mes anterior en Sala 2', use_container_width=True):
+        #         last_days = st.session_state['now'].day + 1
+        #         st.session_state['now'] = st.session_state['now'] - timedelta(last_days)
+        #         reservas = st.session_state['reservas']
+        #         reservas = reservas[reservas['sala'] == 2]
+        #         st.session_state['calendar'] = create_calendar(st.session_state['now'].year, st.session_state['now'].month, 2)
 
-            st.plotly_chart(st.session_state['calendar'])
+        #     if right.button('Mes siguiente en Sala 2', use_container_width=True):
+        #         n_days = monthrange(st.session_state['now'].year, st.session_state['now'].month)[1]
+        #         last_days = n_days - st.session_state['now'].day + 1
+        #         st.session_state['now'] = st.session_state['now'] + timedelta(last_days)
+        #         reservas = st.session_state['reservas']
+        #         reservas = reservas[reservas['sala'] == 2]
+        #         st.session_state['calendar'] = create_calendar(st.session_state['now'].year, st.session_state['now'].month, 2)
+
+        #     st.plotly_chart(st.session_state['calendar'])
 
 
     if pagina == 'Añadir':
@@ -86,13 +90,13 @@ def main_app():
 
 
 
+
 nueva_reserva = {
     'email':        'membername@gmail.com',
     'band':         'band_name',
-    'start_date':   '2024-08-14',
-    'end_date':     '2024-08-14',
-    'start_time':   '15:00:00',
-    'end_time':     '18:00:00',
+    'start_date':   f'{np.random.randint(1,30)}/08/2024',   # Habrá que ver el formato en que se obtiene este dato
+    'start_time':   f'{np.random.randint(0,23)}:00',        # Lo mismo
+    'duration':     np.random.randint(1,3),
     'confirmed':    False,
     'sanctioned':   False,
     'sala':         1
@@ -120,7 +124,7 @@ nuevo_link = {
     'band_email':   'bandemail@gmail.com'
 }
 
-save_new_reg(nueva_reserva)
+# u.save_new_reg(nueva_reserva)
 # save_new_band(nueva_banda)
 # save_new_user(nuevo_usuario)
 # save_new_link(nuevo_link)
