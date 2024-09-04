@@ -72,58 +72,12 @@ class Calendar:
                 },
             xaxis_title = 'Día',
             yaxis_title = 'Franja',
-            width=1700,
-            height=700
+            width =     1700,
+            height =    900
             )
-        fig.update_yaxes(showgrid=False)
-        fig.update_xaxes(tickmode='linear', showgrid=False)
+        # fig.update_yaxes(showgrid=False)
+        fig.update_xaxes(tickmode='linear', showgrid=True)
         st.plotly_chart(fig)
-
-
-
-
-
-
-
-# def create_calendar(year, month, n_salas):
-
-
-
-#     reservas = st.session_state['reservas'].copy()
-#     reservas['start_date'] = pd.to_datetime(reservas['start_date'], format='%Y-%m-%d')
-#     reservas = reservas[reservas['start_date'] > datetime(st.session_state['now'].year, st.session_state['now'].month, 1)]
-#     reservas = reservas[reservas['start_date'] <= datetime(st.session_state['now'].year, st.session_state['now'].month, n_days)]
-#     myscale = [[0, 'rgba(0,0,0,0)'], [1, 'rgba(255, 75, 75, 1)']]
-
-#     fig = px.imshow(
-#         calendar,
-#         color_continuous_midpoint=.5,
-#         color_continuous_scale=myscale
-#         )
-#     fig.update_layout(
-#         coloraxis_showscale=False,
-#         title={
-#             'text':     datetime(year, month, 1).strftime("%B, %Y"),
-#             'x':        0.5,
-#             'xanchor':  'center',
-#             'yanchor':  'top'
-#             },
-#         xaxis_title = 'Día',
-#         yaxis_title = 'Franja',
-#         width=1700,
-#         height=700)
-#     fig.update_yaxes(showgrid=False)
-#     fig.update_xaxes(tickmode='linear', showgrid=False)
-
-#     calendars = []
-#     for sala in reservas['sala'].unique():
-
-        
-#         reservas[reservas['sala'] == sala]
-
-#     grupos = st.session_state['bands']
-
-#     return fig
 
 
 def save_new_reg(new_record):
@@ -185,3 +139,12 @@ def save_new_link(new_link):
             writer.writeheader()
 
         writer.writerow(new_link)
+
+
+def read_csv(filepath, fieldnames):
+    if not os.path.isfile(filepath):
+        with open(filepath, 'w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile)
+            writer.writerow(fieldnames)
+    
+    return pd.read_csv(filepath)

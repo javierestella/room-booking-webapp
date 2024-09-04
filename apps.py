@@ -7,84 +7,66 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 
-def main_app():
+
+def app():
 
     pagina = option_menu(
         menu_title=None,
-        options=['Visor','Añadir','Confirmar','Eliminar'],
-        icons=['calendar','calendar-plus-fill','calendar-check-fill','calendar-x-fill'],
+        options=['Calendar', 'Data', 'Payments'],
+        icons=['calendar', 'table', 'money'],
         orientation='horizontal'
         )
-    if pagina == 'Visor':
-        st.title('Calendario')
-        calendar = u.Calendar(2024, 8, 1)
+    
+    if pagina == 'Calendar':
 
-        # calendar.add_booking(nueva_reserva)
-        calendar.show()
+        subpagina = option_menu(
+            menu_title=None,
+            options=['Visor','Añadir','Confirmar','Eliminar'],
+            icons=['calendar','calendar-plus-fill','calendar-check-fill','calendar-x-fill'],
+            orientation='horizontal'
+            )
 
-        # with st.expander('Sala 1'):
-        #     left,right = st.columns(2)
-        #     if left.button('Mes anterior en Sala 1', use_container_width=True):
-        #         last_days = st.session_state['now'].day + 1
-        #         st.session_state['now'] = st.session_state['now'] - timedelta(last_days)
-        #         st.session_state['calendar'] = create_calendar(st.session_state['now'].year, 
-        #                                                        st.session_state['now'].month, 
-        #                                                        1)
+        if subpagina == 'Visor':
+            st.title('Calendar')
 
-        #     if right.button('Mes siguiente en Sala 1', use_container_width=True):
-        #         n_days = monthrange(st.session_state['now'].year, st.session_state['now'].month)[1]
-        #         last_days = n_days - st.session_state['now'].day + 1
-        #         st.session_state['now'] = st.session_state['now'] + timedelta(last_days)
-        #         st.session_state['calendar'] = create_calendar(st.session_state['now'].year, 
-        #                                                        st.session_state['now'].month, 
-        #                                                        1)
+            p, n = st.columns(2)
+            with p:
+                month_days = monthrange(st.session_state['now'].year, st.session_state['now'].month)[1]
+                if p.button('Prev. Month', use_container_width=True):
+                    st.session_state['now'] -= timedelta(month_days + 1)
+                if n.button('Next. Month', use_container_width=True):
+                    st.session_state['now'] += timedelta(month_days - st.session_state['now'].day + 1)
 
-        #     st.plotly_chart(st.session_state['calendar'])
-
-        # with st.expander('Sala 2'):
-        #     left,right = st.columns(2)
-        #     if left.button('Mes anterior en Sala 2', use_container_width=True):
-        #         last_days = st.session_state['now'].day + 1
-        #         st.session_state['now'] = st.session_state['now'] - timedelta(last_days)
-        #         reservas = st.session_state['reservas']
-        #         reservas = reservas[reservas['sala'] == 2]
-        #         st.session_state['calendar'] = create_calendar(st.session_state['now'].year, st.session_state['now'].month, 2)
-
-        #     if right.button('Mes siguiente en Sala 2', use_container_width=True):
-        #         n_days = monthrange(st.session_state['now'].year, st.session_state['now'].month)[1]
-        #         last_days = n_days - st.session_state['now'].day + 1
-        #         st.session_state['now'] = st.session_state['now'] + timedelta(last_days)
-        #         reservas = st.session_state['reservas']
-        #         reservas = reservas[reservas['sala'] == 2]
-        #         st.session_state['calendar'] = create_calendar(st.session_state['now'].year, st.session_state['now'].month, 2)
-
-        #     st.plotly_chart(st.session_state['calendar'])
+            for sala in range(1, st.session_state['n_salas'] + 1):
+                with st.expander(f'Sala {sala}'):
+                    calendar = u.Calendar(st.session_state['now'].year, st.session_state['now'].month, sala)
+                    calendar.show()
 
 
-    if pagina == 'Añadir':
-        _, form, _ = st.columns([4,5,4])
-        with form:
-            grupo = st.selectbox(
-                label='Grupo',
-                options=st.session_state['bands']['name'].to_list()
-                )
-            date = st.date_input(
-                label='Fecha',
-                min_value=datetime.now(),
-                format='DD/MM/YYYY'
-                )
-            start_time = st.time_input(
-                label='Hora de inicio',
-                # value=datetime.now() + timedelta(minutes= 30 - datetime.now().minute) if datetime.now().minute < 30 else timedelta(minutes= 60 - datetime.now().minute),
-                step=30*60
-                )
-            duration = st.selectbox(
-                label='Duración de la reserva (horas)',
-                options=range(1,4)
-                )
-            if st.button('Añadir reserva', type='primary'):
+        if subpagina == 'Añadir':
+            _, form, _ = st.columns([4,5,4])
+            with form:
+                grupo = st.selectbox(
+                    label='Grupo',
+                    options=sorted(st.session_state['bands']['name'].to_list())
+                    )
+                date = st.date_input(
+                    label='Fecha',
+                    min_value=datetime.now(),
+                    format='DD/MM/YYYY'
+                    )
+                st.code([date, type(date)])
+                start_time = st.time_input(
+                    label='Hora de inicio',
+                    step=30*60
+                    )
+                duration = st.selectbox(
+                    label='Duración de la reserva (horas)',
+                    options=range(1,4)
+                    )
+                if st.button('Añadir reserva', type='primary'):
 
-                pass
+                    pass
 
 
 
@@ -104,8 +86,8 @@ nueva_reserva = {
 
 nueva_banda = {
     'date':     datetime.now(),
-    'email':    'bandemail@gmail.com',
-    'name':     'band_name'
+    'email':    'vicriver94@gmail.com',
+    'name':     'Dio Genes'
     }
 
 nuevo_usuario = {
@@ -125,6 +107,7 @@ nuevo_link = {
 }
 
 # u.save_new_reg(nueva_reserva)
-# save_new_band(nueva_banda)
+u.save_new_band(nueva_banda)
+
 # save_new_user(nuevo_usuario)
 # save_new_link(nuevo_link)
